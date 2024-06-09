@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "652192299119",
+    "project_id": "wallet-manager-413900",
+    "storage_bucket": "wallet-manager-413900.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652192299119:android:c9ae80e2a53f1aeefb359a",
+        "android_client_info": {
+          "package_name": "com.iusegales.walletmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652192299119-ccnd82hc96h19s5hhsg1nsabpka3sm23.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLkMqRTi9P8vYg7-uapZpJfVvW0-M4X0M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652192299119-ccnd82hc96h19s5hhsg1nsabpka3sm23.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
