@@ -1,28 +1,31 @@
 <template>
   <ion-app>
     <ion-split-pane content-id="main-content">
-      <ion-menu content-id="main-content" type="overlay">
+      <ion-menu v-if="store.getters.loggedState" content-id="main-content" type="overlay">
         <ion-content>
           <ion-list id="inbox-list">
-            <ion-list-header>Inbox</ion-list-header>
-            <ion-note>hi@ionicframework.com</ion-note>
+            <ion-item v-if="store.getters.userImgUrl" class="menu_user_info" lines="none">
+              <ion-avatar slot="start">
+                <img alt="Profile photo" :src="store.getters.userImgUrl" />
+              </ion-avatar>
+              <ion-label>{{store.getters.userName}}<p>{{store.getters.userMail}}</p></ion-label>
+            </ion-item>
+
+            <ion-item v-else class="menu_user_info" lines="none">
+              <ion-avatar slot="start">
+                <img alt="Profile photo" :src="thumbNailAvatarImgURL"/>
+              </ion-avatar>
+              <ion-label>{{store.getters.userName}}<p>{{store.getters.userMail}}</p></ion-label>
+            </ion-item>
 
             <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" :detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
+              <ion-item @click="store.commit('selectedIndex', i)" router-direction="root" :router-link="p.url" lines="none" :detail="false" class="hydrated" :class="{ selected: store.getters.selectedIndex === i }">
                 <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
                 <ion-label>{{ p.title }}</ion-label>
               </ion-item>
             </ion-menu-toggle>
           </ion-list>
 
-          <ion-list id="labels-list">
-            <ion-list-header>Labels</ion-list-header>
-
-            <ion-item v-for="(label, index) in labels" lines="none" :key="index">
-              <ion-icon aria-hidden="true" slot="start" :ios="bookmarkOutline" :md="bookmarkSharp"></ion-icon>
-              <ion-label>{{ label }}</ion-label>
-            </ion-item>
-          </ion-list>
         </ion-content>
       </ion-menu>
       <ion-router-outlet id="main-content"></ion-router-outlet>
@@ -30,7 +33,7 @@
   </ion-app>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import {
   IonApp,
   IonContent,
@@ -38,76 +41,84 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonMenu,
   IonMenuToggle,
-  IonNote,
   IonRouterOutlet,
   IonSplitPane,
+  IonAvatar
 } from '@ionic/vue';
-import { ref } from 'vue';
+
+import { defineComponent } from 'vue';
 import {
-  archiveOutline,
-  archiveSharp,
-  bookmarkOutline,
-  bookmarkSharp,
-  heartOutline,
-  heartSharp,
-  mailOutline,
-  mailSharp,
-  paperPlaneOutline,
-  paperPlaneSharp,
-  trashOutline,
-  trashSharp,
-  warningOutline,
-  warningSharp,
+  home,
+  settings,
+  statsChart,
+  logoUsd,
+  wallet, albums
 } from 'ionicons/icons';
+import store from "@/store/store";
 
-const selectedIndex = ref(0);
-const appPages = [
-  {
-    title: 'Inbox',
-    url: '/folder/Inbox',
-    iosIcon: mailOutline,
-    mdIcon: mailSharp,
+export default defineComponent({
+  name: "App",
+  computed: {
+    store() {
+      return store
+    }
   },
-  {
-    title: 'Outbox',
-    url: '/folder/Outbox',
-    iosIcon: paperPlaneOutline,
-    mdIcon: paperPlaneSharp,
-  },
-  {
-    title: 'Favorites',
-    url: '/folder/Favorites',
-    iosIcon: heartOutline,
-    mdIcon: heartSharp,
-  },
-  {
-    title: 'Archived',
-    url: '/folder/Archived',
-    iosIcon: archiveOutline,
-    mdIcon: archiveSharp,
-  },
-  {
-    title: 'Trash',
-    url: '/folder/Trash',
-    iosIcon: trashOutline,
-    mdIcon: trashSharp,
-  },
-  {
-    title: 'Spam',
-    url: '/folder/Spam',
-    iosIcon: warningOutline,
-    mdIcon: warningSharp,
-  },
-];
-const labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
+  components: { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle,
+                IonRouterOutlet, IonSplitPane, IonAvatar },
+  data() {
+    const thumbNailAvatarImgURL = "https://ionicframework.com/docs/img/demos/avatar.svg";
 
-const path = window.location.pathname.split('folder/')[1];
-if (path !== undefined) {
-  selectedIndex.value = appPages.findIndex((page) => page.title.toLowerCase() === path.toLowerCase());
-}
+    const appPages = [
+      {
+        title: this.$t("home.pageTitle"),
+        url: '/HomePage',
+        iosIcon: home,
+        mdIcon: home,
+      },
+      {
+        title: this.$t("accounts.pageTitle"),
+        url: '/AccountsPage',
+        iosIcon: logoUsd,
+        mdIcon: logoUsd
+      },
+      {
+        title: this.$t("piggybanks.pageTitle"),
+        url: '/PiggyBanksPage',
+        iosIcon: wallet,
+        mdIcon: wallet
+      },
+      {
+        title: this.$t("stats.pageTitle"),
+        url: '/StatsPage',
+        iosIcon: statsChart,
+        mdIcon: statsChart
+      },
+      {
+        title: this.$t("categories.pageTitle"),
+        url: '/CategoriesPage',
+        iosIcon: albums,
+        mdIcon: albums
+      },
+      {
+        title: this.$t("settings.pageTitle"),
+        url: '/SettingsPage',
+        iosIcon: settings,
+        mdIcon: settings
+      },
+    ];
+
+    return {
+      appPages,
+      thumbNailAvatarImgURL,
+    }
+  },
+  beforeMount() {
+
+  }
+})
+
 </script>
 
 <style scoped>
@@ -137,13 +148,7 @@ ion-menu.md ion-note {
 
 ion-menu.md ion-list#inbox-list {
   border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
-}
-
-ion-menu.md ion-list#inbox-list ion-list-header {
-  font-size: 22px;
-  font-weight: 600;
-
-  min-height: 20px;
+  padding-top: 0;
 }
 
 ion-menu.md ion-list#labels-list ion-list-header {
@@ -230,4 +235,12 @@ ion-note {
 ion-item.selected {
   --color: var(--ion-color-primary);
 }
+
+.menu_user_info {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ion-color-step-150, #d7d8da);
+  border-radius: 0 !important;
+}
+
 </style>
